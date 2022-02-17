@@ -68,7 +68,7 @@ class Transactions(db.Model):
                 elif "details" not in records:
                     error = "Transaction Details Not Provided!!!"
                     return error, data
-                elif "withdrawal" in records and records["withdrawal"] and float(records["withdrawal"]) <= 0:
+                elif "withdraw" in records and records["withdraw"] and float(records["withdraw"]) <= 0:
                     error = "Withdrawal Amount Not Correct!!!"
                     return error, data
                 elif "deposit" in records and records["deposit"] and float(records["deposit"]) <= 0:
