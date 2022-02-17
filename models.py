@@ -76,6 +76,7 @@ class Transactions(db.Model):
                     return error, data
                 return error, records
         except Exception as e:
-            return e, data
+            print(e)
+            return "Error", data
         else:
             return "InCorrect Data Format", data

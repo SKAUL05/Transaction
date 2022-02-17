@@ -59,7 +59,6 @@ def transactions_id(id):
 @app.route("/add", methods=["POST"])
 def add_data():
     data = json.loads(request.data.decode())
-    print(type(data))
     err, valid = Transactions.validate_addition(data)
 
     if err:
