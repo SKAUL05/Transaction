@@ -7,6 +7,7 @@ from babel.numbers import format_decimal
 
 db = SQLAlchemy()
 
+
 class Transactions(db.Model):
     __tablename__ = "transactions"
 
@@ -68,10 +69,18 @@ class Transactions(db.Model):
                 elif "details" not in records:
                     error = "Transaction Details Not Provided!!!"
                     return error, data
-                elif "withdraw" in records and records["withdraw"] and float(records["withdraw"]) <= 0:
+                elif (
+                    "withdraw" in records
+                    and records["withdraw"]
+                    and float(records["withdraw"]) <= 0
+                ):
                     error = "Withdrawal Amount Not Correct!!!"
                     return error, data
-                elif "deposit" in records and records["deposit"] and float(records["deposit"]) <= 0:
+                elif (
+                    "deposit" in records
+                    and records["deposit"]
+                    and float(records["deposit"]) <= 0
+                ):
                     error = "Deposit Amount Not Correct!!!"
                     return error, data
                 return error, records
