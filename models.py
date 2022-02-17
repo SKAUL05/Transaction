@@ -1,9 +1,11 @@
 import locale
-from app import db
 from datetime import date
+from flask_sqlalchemy import SQLAlchemy
+
 
 from babel.numbers import format_decimal
 
+db = SQLAlchemy()
 
 class Transactions(db.Model):
     __tablename__ = "transactions"
