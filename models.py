@@ -27,63 +27,61 @@ class Transactions(db.Model):
         self.deposit = deposit
         self.balance = balance
 
-    def return_json(transactions):
-        print(transactions)
-        retr_json = []
-        for item in transactions:
-            retr_json.append(
-                {
-                    "Account No": item.account_no,
-                    "Date": item.date.strftime("%d %b %y"),
-                    "Transaction Details": item.details,
-                    "Value Date": item.date.strftime("%d %b %y"),
-                    "Withdrawal AMT": format_decimal(item.withdrawal, locale="en_IN")
-                    if item.withdrawal
-                    else "",
-                    "Deposit AMT": format_decimal(item.deposit, locale="en_IN")
-                    if item.deposit
-                    else "",
-                    "Balance AMT": format_decimal(item.balance, locale="en_IN"),
-                }
-            )
-        return retr_json
+    def return_json(self):
+        print(self)
+        return [
+            {
+                "Account No": item.account_no,
+                "Date": item.date.strftime("%d %b %y"),
+                "Transaction Details": item.details,
+                "Value Date": item.date.strftime("%d %b %y"),
+                "Withdrawal AMT": format_decimal(item.withdrawal, locale="en_IN")
+                if item.withdrawal
+                else "",
+                "Deposit AMT": format_decimal(item.deposit, locale="en_IN")
+                if item.deposit
+                else "",
+                "Balance AMT": format_decimal(item.balance, locale="en_IN"),
+            }
+            for item in self
+        ]
 
-    def return_balance(balance):
-        return format_decimal(balance, locale="en_IN")
+    def return_balance(self):
+        return format_decimal(self, locale="en_IN")
 
-    def validate_addition(records):
+    def validate_addition(self):
         error, data = "", []
-        print(type(records))
+        print(type(self))
         try:
-            if type(records) == dict:
+            if type(self) == dict:
                 if (
-                    "account_no" not in records
-                    or records["account_no"] == str
-                    or records["account_no"] <= 0
+                    "account_no" not in self
+                    or self["account_no"] == str
+                    or self["account_no"] <= 0
                 ):
                     error = "Account Number Not Correct!!!"
                     return error, data
-                elif "date" not in records:
+                elif "date" not in self:
                     error = "Date Not Provided!!!"
                     return error, data
-                elif "details" not in records:
+                elif "details" not in self:
                     error = "Transaction Details Not Provided!!!"
                     return error, data
                 elif (
-                    "withdraw" in records
-                    and records["withdraw"]
-                    and float(records["withdraw"]) <= 0
+                    "withdraw" in self
+                    and self["withdraw"]
+                    and float(self["withdraw"]) <= 0
                 ):
                     error = "Withdrawal Amount Not Correct!!!"
                     return error, data
                 elif (
-                    "deposit" in records
-                    and records["deposit"]
-                    and float(records["deposit"]) <= 0
+                    "deposit" in self
+                    and self["deposit"]
+                    and float(self["deposit"]) <= 0
                 ):
                     error = "Deposit Amount Not Correct!!!"
                     return error, data
-                return error, records
+                return error, self
         except Exception as e:
             print(e)
             return "Error", data
