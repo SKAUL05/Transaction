@@ -30,7 +30,7 @@ def start():
 
 @app.route("/transactions/<date>", methods=["GET"])
 def transactions_date(date):
-    return_list = list()
+    return_list = []
     date_data = parser.parse(date).date()
     transactions = Transactions.query.filter_by(date=date_data).all()
     return_list = Transactions.return_json(transactions)
@@ -40,8 +40,7 @@ def transactions_date(date):
 @app.route("/balance/<date>", methods=["GET"])
 def balance_date(date):
     date_data = parser.parse(date).date()
-    transactions = Transactions.query.filter_by(date=date_data).all()
-    if transactions:
+    if transactions := Transactions.query.filter_by(date=date_data).all():
         remaining = Transactions.return_balance(transactions[-1].balance)
     else:
         remaining = ""
@@ -63,37 +62,35 @@ def add_data():
 
     if err:
         return jsonify({"message": False, "error": err})
-    else:
-        transactions = Transactions.query.filter_by(account_no=data["account_no"]).all()
-        balance = 0
-        if data["withdraw"]:
-            if transactions:
-                balance = transactions[-1].balance - data["withdraw"]
-                if balance < 0:
-                    return jsonify(
-                        {"message": False, "error": "Withdrawal Not Allowed"}
-                    )
-            else:
-                return jsonify(
-                    {"message": False, "error": "Account Not Found For Withdrawal"}
-                )
-        elif data["deposit"]:
-            if transactions:
-                balance = transactions[-1].balance + data["deposit"]
-            else:
-                balance = data["deposit"]
-
-        final = Transactions(
-            data["account_no"],
-            data["details"],
-            parser.parse(data["date"]).date(),
-            data["withdraw"] if data["withdraw"] else 0,
-            data["deposit"] if data["deposit"] else 0,
-            balance,
+    transactions = Transactions.query.filter_by(account_no=data["account_no"]).all()
+    balance = 0
+    if data["withdraw"]:
+        if not transactions:
+            return jsonify(
+                {"message": False, "error": "Account Not Found For Withdrawal"}
+            )
+        balance = transactions[-1].balance - data["withdraw"]
+        if balance < 0:
+            return jsonify(
+                {"message": False, "error": "Withdrawal Not Allowed"}
+            )
+    elif data["deposit"]:
+        balance = (
+            transactions[-1].balance + data["deposit"]
+            if transactions
+            else data["deposit"]
         )
-        db.session.add(final)
-        db.session.commit()
-        return jsonify({"message": True, "id": final.id})
+    final = Transactions(
+        data["account_no"],
+        data["details"],
+        parser.parse(data["date"]).date(),
+        data["withdraw"] if data["withdraw"] else 0,
+        data["deposit"] if data["deposit"] else 0,
+        balance,
+    )
+    db.session.add(final)
+    db.session.commit()
+    return jsonify({"message": True, "id": final.id})
 
 
 if __name__ == "__main__":
